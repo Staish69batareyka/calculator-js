@@ -3,32 +3,50 @@ const createBtn = document.getElementById('create')
 const listElement = document.getElementById('list')
 
 
-const notes = ['xmmm', 'dfdfd']
+const notes = [
+    {
+        title: 'xmmm',
+        completed: false
+    }, 
+    {
+        title: 'dgdggdgd',
+        completed: true
+    }]
 
 
-function list(element){
+listElement.onclick = (e) =>{
+    if(e.target.dataset.index) {
+        const index = parseInt(e.target.dataset.index)
+        const type = e.target.dataset.type
+        if (type === 'toggle'){
+            notes[index].completed = !notes[index].completed
+        } else if (type === 'remove'){
+            notes.splice(index, 1)
+        }
+        render()
+    }
+    
+}
+
+function list(element, ind){
     return `
     <li
       class="list-group-item d-flex justify-content-between align-items-center"
     >
-      <span>${element}</span>
+      <span class="${element.completed ? 'text-decoration-line-through' : ''}">${element.title}</span>
       <span>
-        <span class="btn btn-small btn-success">&check;</span>
-        <span class="btn btn-small btn-danger">&times;</span>
+        <span class="btn btn-small btn-${element.completed ? "warning" : "success"}" data-type="toggle" data-index="${ind}">&check;</span>
+        <span class="btn btn-small btn-danger" data-type="remove" data-index="${ind}">&times;</span>
       </span>
     </li>
     
-    `
-    
+    `  
 }
 
 function render(){
-    // for(let i = 0; i < notes.length; i++){
-    //     listElement.insertAdjacentHTML('beforeend', list(notes[i]))
-    // }
-
-    for (let note of notes){
-        listElement.insertAdjacentHTML('beforeend', list(note))
+    listElement.innerHTML = ''
+    for (let i = 0; i < notes.length; i++){
+        listElement.insertAdjacentHTML('beforeend', list(notes[i], i))
     }
         
 }
@@ -39,7 +57,12 @@ createBtn.onclick = () =>{
     if(!title.value) {
         return
     }
-    listElement.insertAdjacentHTML('beforeend', list(title.value))
+    const newNote = {
+        title: title.value,
+        completed: false
+    }
+    notes.push(newNote)
+    render()
     title.value = ''
 
 }
